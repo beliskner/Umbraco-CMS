@@ -1,4 +1,4 @@
-<div ng-controller="Umbraco.PrevalueEditors.CropSizesController" class="umb-property-editor umb-prevalues-multivalues umb-cropsizes">
+<div ng-controller="Umbraco.PrevalueEditors.CropSizesController as vm" class="umb-property-editor umb-prevalues-multivalues umb-cropsizes">
 
     <div class="control-group umb-cropsizes__add">
 
@@ -49,6 +49,32 @@
                    ng-keydown="createNew($event)"
                    overlay-submit-on-enter="false" />
         </div>
+
+        <div class="umb-cropsizes__input-wrap umb-cropsizes__input-wrap--narrow" style="position: relative;">
+          <label for="imageformat"><localize key="general_image_format">Format</localize></label>
+          <select id="imageformat"
+                  ng-init="selectedFormat = vm.imageFormats[0]"
+                  ng-options="format as format.name for format in vm.imageFormats"
+                  ng-model="selectedFormat" ng-change="vm.select(selectedFormat)"
+                  style="width: 100px;"></select>
+        </div>
+
+      <div class="umb-cropsizes__input-wrap umb-cropsizes__input-wrap--narrow" ng-show="vm.showQualityInput">
+        <label for="changequality"><localize key="general_quality">Quality</localize></label>
+        <input type="number"
+               name="newItem.webPQuality"
+               localize="placeholder"
+               placeholder="@general_quality"
+               ng-model="newItem.webPQuality"
+               class="umb-cropsizes__input"
+               val-highlight="{{hasError}}"
+               id="changequality"
+               min="0"
+               max="100"
+               pattern="[0-9]*"
+               ng-keydown="createNew($event)"
+               overlay-submit-on-enter="false" />
+      </div>
 
         <div class="umb-cropsizes__controls">
             <button type="button" class="btn btn-info add" ng-hide="editMode" ng-click="add($event)"><localize key="general_add">Add</localize></button>

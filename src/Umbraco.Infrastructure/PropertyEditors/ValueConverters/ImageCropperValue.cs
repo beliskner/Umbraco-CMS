@@ -272,6 +272,48 @@ public class ImageCropperValue : IHtmlEncodedString, IEquatable<ImageCropperValu
         #endregion
     }
 
+    /// <summary>
+    /// Specifies what image format should be rendered for the crop. Default is Original, this will retain the uploaded format.
+    /// </summary>
+    public enum ImageCropFormat
+    {
+        /// <summary>
+        /// Indicates that the format should be the original upload format.
+        /// </summary>
+        [Description("Original")]
+        Original = 0,
+
+        /// <summary>
+        /// Indicates that the format should be the Bitmap (BMP) format.
+        /// </summary>
+        [Description("Bmp")]
+        Bmp,
+
+        /// <summary>
+        /// Indicates that the format should be the Graphics Interchange Format (GIF) format.
+        /// </summary>
+        [Description("Gif")]
+        Gif,
+
+        /// <summary>
+        /// Indicates that the format should be the Joint Photographic Experts Group (JPEG or JPG) format.
+        /// </summary>
+        [Description("Jpeg")]
+        Jpeg,
+
+        /// <summary>
+        /// Indicates that the format should be the Portable Graphics Format (PNG) format.
+        /// </summary>
+        [Description("Png")]
+        Png,
+
+        /// <summary>
+        /// Indicates that the format should be the Web Picture (WebP) format.
+        /// </summary>
+        [Description("WebP")]
+        WebP
+    }
+
     [DataContract(Name = "imageCropData")]
     public class ImageCropperCrop : IEquatable<ImageCropperCrop>
     {
@@ -282,6 +324,8 @@ public class ImageCropperValue : IHtmlEncodedString, IEquatable<ImageCropperValu
         [DataMember(Name = "height")] public int Height { get; set; }
 
         [DataMember(Name = "coordinates")] public ImageCropperCropCoordinates? Coordinates { get; set; }
+
+        [DataMember(Name = "format")] public ImageCropperImageFormat? Format { get; set; }
 
         #region IEquatable
 
@@ -419,4 +463,53 @@ public class ImageCropperValue : IHtmlEncodedString, IEquatable<ImageCropperValu
     }
 
     #endregion
+
+    [DataContract(Name = "imageCropImageFormat")]
+    public class ImageCropperImageFormat : IEquatable<ImageCropperImageFormat>
+    {
+        [DataMember(Name = "format")] public ImageCropFormat Format { get; set; }
+
+        /// <summary>
+        /// Defines the compression quality. Between 0 and 100.
+        /// </summary>
+        /// <see cref="https://github.com/SixLabors/ImageSharp/blob/main/src/ImageSharp/Formats/Webp/WebpEncoderCore.cs">
+        /// Encoding documentation
+        /// </see>
+        [DataMember(Name = "optionalWebPQuality")] public int OptionalWebPQuality { get; set; } = 100;
+
+        #region IEquatable
+
+        /// <inheritdoc />
+        public bool Equals(ImageCropperImageFormat? other)
+            => ReferenceEquals(this, other) || Equals(this, other);
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+            => ReferenceEquals(this, obj) || (obj is ImageCropperImageFormat other && Equals(this, other));
+
+        private static bool Equals(ImageCropperImageFormat left, ImageCropperImageFormat? right)
+            => ReferenceEquals(left, right) // deals with both being null, too
+               || (!ReferenceEquals(left, null) && !ReferenceEquals(right, null)
+                                                && left.Format == right.Format
+                                                && left.OptionalWebPQuality == right.OptionalWebPQuality);
+
+        public static bool operator ==(ImageCropperImageFormat left, ImageCropperImageFormat right)
+            => Equals(left, right);
+
+        public static bool operator !=(ImageCropperImageFormat left, ImageCropperImageFormat right)
+            => !Equals(left, right);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                // properties are, practically, readonly
+                // ReSharper disable NonReadonlyMemberInGetHashCode
+                return (Format.GetHashCode() * 397) ^ Format.GetHashCode();
+                // ReSharper restore NonReadonlyMemberInGetHashCode
+            }
+        }
+
+        #endregion
+    }
 }

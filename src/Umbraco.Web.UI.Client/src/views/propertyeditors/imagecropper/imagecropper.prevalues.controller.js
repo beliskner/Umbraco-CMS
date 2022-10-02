@@ -1,12 +1,48 @@
 angular.module("umbraco").controller("Umbraco.PrevalueEditors.CropSizesController",
 	function ($scope) {
+      const vm = this;
+
+      vm.showQualityInput = false;
+      vm.formatQuality = -1;
+      vm.imageFormats = [
+          { "name": "Original" },
+          { "name": "Bmp" },
+          { "name": "Gif" },
+          { "name": "Jpeg" },
+          { "name": "Png" },
+          { "name": "WebP", "qualityFormat": true, "quality" : 100 }
+      ];
+
+      vm.selectedFormat = vm.imageFormats[0];
 
 	    if (!$scope.model.value) {
 	        $scope.model.value = [];
 	    }
 
-        $scope.editMode = false;
-        $scope.setFocus = false;
+      vm.getSelectedFormatLabel = function() {
+          return vm.selectedFormat.name;
+      };
+
+      vm.select = function(imageFormat) {
+          vm.selectedFormat = imageFormat;
+          vm.showQualityInput = imageFormat.qualityFormat;
+      };
+
+      vm.updateFormatQuality = function(quality) {
+          vm.selectedFormat.quality = quality === undefined || quality > 100 ? vm.formatQuality = 100 : quality < 0 ? vm.formatQuality = 0 : vm.formatQuality = quality;
+      };
+
+      vm.shouldRenderSecondaryCropInfo = function(item) {
+          return item.selectedFormat !== undefined && item.selectedFormat !== vm.imageFormats[0];
+      }
+
+      vm.renderSecondaryCropInformation = function(item) {
+          if (!vm.shouldRenderSecondaryCropInfo(item)) return "";
+          return item.selectedFormat.qualityFormat ? '(Format: ' + item.selectedFormat.name + ' | Quality : ' + item.selectedFormat.quality + ')' : '(Format: ' + item.selectedFormat.name +  ')';
+      }
+
+      $scope.editMode = false;
+      $scope.setFocus = false;
 
 	    $scope.remove = function (item, evt) {
 	        evt.preventDefault();
@@ -16,9 +52,9 @@ angular.module("umbraco").controller("Umbraco.PrevalueEditors.CropSizesControlle
 	    };
 
 	    $scope.edit = function (item, evt) {
-            evt.preventDefault();
-            $scope.editMode = true;
-            $scope.setFocus = false;
+          evt.preventDefault();
+          $scope.editMode = true;
+          $scope.setFocus = false;
 
 	        $scope.newItem = item;
 	    };
@@ -41,6 +77,7 @@ angular.module("umbraco").controller("Umbraco.PrevalueEditors.CropSizesControlle
 
 	    $scope.add = function (evt) {
             evt.preventDefault();
+            $scope.newItem.selectedFormat = vm.selectedFormat;
 
             $scope.editMode = false;
             $scope.setFocus = true;
@@ -49,9 +86,10 @@ angular.module("umbraco").controller("Umbraco.PrevalueEditors.CropSizesControlle
                 Utilities.isNumber($scope.newItem.width) && Utilities.isNumber($scope.newItem.height) &&
                 $scope.newItem.width > 0 && $scope.newItem.height > 0) {
 
-                var exists = _.find($scope.model.value, function (item) { return $scope.newItem.alias === item.alias; });
+              const exists = _.find($scope.model.value, function (item) { return $scope.newItem.alias === item.alias; });
 
 	            if (!exists) {
+                  $scope.newItem.selectedFormat = vm.selectedFormat;
 	                $scope.model.value.push($scope.newItem);
 	                $scope.newItem = {};
                     $scope.hasError = false;

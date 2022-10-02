@@ -833,6 +833,8 @@
     <key alias="articles">Artikels</key>
     <key alias="videos">Videos</key>
     <key alias="avatar">Avatar van</key>
+    <key alias="quality">Kwaliteit</key>
+    <key alias="format">Formaat</key>
   </area>
   <area alias="colors">
     <key alias="blue">Blauw</key>

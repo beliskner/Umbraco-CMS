@@ -902,6 +902,8 @@
     <key alias="header">Header</key>
     <key alias="systemField">system field</key>
     <key alias="lastUpdated">Last Updated</key>
+    <key alias="quality">Quality</key>
+    <key alias="format">Format</key>
   </area>
   <area alias="colors">
     <key alias="blue">Blue</key>
